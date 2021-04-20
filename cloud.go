@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -94,7 +95,7 @@ func (c *Client) UploadDir(src string, dest string) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		err = c.Upload(data, filepath.Join(dest, filepath.Base(file)))
+		err = c.Upload(data, path.Join(dest, path.Base(file)))
 		if err != nil {
 			return nil, err
 		}
@@ -155,10 +156,10 @@ func (c *Client) CreateReadOnlyShare(path string) (*ShareResult, error) {
 	return c.sendOCSRequest("PUT", fmt.Sprintf("shares/%d", id), "permissions=1")
 }
 
-func (c *Client) sendWebDavRequest(request string, path string, data []byte) ([]byte, error) {
+func (c *Client) sendWebDavRequest(request string, fpath string, data []byte) ([]byte, error) {
 	// Create the https request
 
-	webdavPath := filepath.Join("remote.php/webdav", path)
+	webdavPath := path.Join("remote.php/webdav", fpath)
 
 	folderUrl, err := url.Parse(webdavPath)
 	if err != nil {
@@ -200,10 +201,10 @@ func (c *Client) sendWebDavRequest(request string, path string, data []byte) ([]
 	return body, nil
 }
 
-func (c *Client) sendAppsRequest(request string, path string, data string) (*ShareResult, error) {
+func (c *Client) sendAppsRequest(request string, fpath string, data string) (*ShareResult, error) {
 	// Create the https request
 
-	appsPath := filepath.Join("apps", path)
+	appsPath := path.Join("apps", fpath)
 
 	folderUrl, err := url.Parse(appsPath)
 	if err != nil {
@@ -243,10 +244,10 @@ func (c *Client) sendAppsRequest(request string, path string, data string) (*Sha
 	return &result, nil
 }
 
-func (c *Client) sendOCSRequest(request string, path string, data string) (*ShareResult, error) {
+func (c *Client) sendOCSRequest(request string, fpath string, data string) (*ShareResult, error) {
 	// Create the https request
 
-	appsPath := filepath.Join("ocs/v2.php/apps/files_sharing/api/v1", path)
+	appsPath := path.Join("ocs/v2.php/apps/files_sharing/api/v1", fpath)
 
 	folderUrl, err := url.Parse(appsPath)
 	if err != nil {
